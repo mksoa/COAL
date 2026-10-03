@@ -59,8 +59,8 @@ Até a conclusão dessas etapas, nenhum resultado deste repositório pode ser pr
 
 - `CUSTODY_POLICY.md` — propriedades desejadas e limitações.
 - `schemas/` — JSON Schemas (Draft 2020-12).
-- `receipts/` — organização futura dos recibos.
-- `.github/workflows/` — nenhum workflow instalado.
+- `receipts/` — previsto para uma etapa posterior; não há recibos operacionais implantados.
+- `.github/workflows/ci.yml` — validação somente leitura do código na `main`; nenhum workflow operacional de custódia instalado.
 
 ## V0.3 source implementation (non-operational)
 
