@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 
 DOMAIN = "COAL/attempt-identity/v1"
-REF_NAMESPACE = "refs/coal/attempts/"
+REF_NAMESPACE = "refs/heads/coal/attempts/"
 _REPO_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 _HEX40 = re.compile(r"^[0-9a-f]{40}$")
 _HEX64 = re.compile(r"^[0-9a-f]{64}$")

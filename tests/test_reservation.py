@@ -24,7 +24,7 @@ class T(unittest.TestCase):
         net = SyntheticGitHub()
         net.refs[ident().ref_name] = "b" * 40
         r = run(net)
-        self.assertEqual(r.outcome, O.ALREADY_EXISTS)
+        self.assertEqual(r.outcome, O.CONFLICT)
         self.assertEqual(net.refs[ident().ref_name], "b" * 40)
         self.assertEqual(net.create_calls, 1)
 
@@ -32,12 +32,12 @@ class T(unittest.TestCase):
         self.assertEqual(run(SyntheticGitHub(create_fault="divergent_201")).outcome, O.CONFLICT)
 
     def test_422_without_exists_is_rejected(self):
-        self.assertEqual(run(SyntheticGitHub(create_fault="validation_422")).outcome, O.REJECTED)
+        self.assertEqual(run(SyntheticGitHub(create_fault="validation_422")).outcome, O.CONFLICT)
 
     def test_422_exists_is_not_ownership(self):
         net = SyntheticGitHub(); net.refs[ident().ref_name] = SHA
         r = run(net)
-        self.assertEqual(r.outcome, O.ALREADY_EXISTS)
+        self.assertEqual(r.outcome, O.CONFLICT)
         self.assertFalse(ReservationResult.ownership_established)
 
     def test_403_rejected(self):

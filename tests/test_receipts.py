@@ -2,7 +2,7 @@ import dataclasses
 import unittest
 from coal.receipts import Receipt, ReceiptError, body_bytes, build_receipt, verify_receipt
 
-REF = "refs/coal/attempts/" + "1" * 64
+REF = "refs/heads/coal/attempts/" + "1" * 64
 
 
 def mk(body=b'{"a":1}', **kw):

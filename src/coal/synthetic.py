@@ -62,5 +62,5 @@ class SyntheticGitHub:
             if f == "other_sha":
                 return TransportResponse(200, ref_body(ref, "f" * 40))
             if f == "other_ref":
-                return TransportResponse(200, ref_body("refs/coal/attempts/other", self.refs[ref]))
+                return TransportResponse(200, ref_body("refs/heads/coal/attempts/other", self.refs[ref]))
             return TransportResponse(200, ref_body(ref, self.refs[ref]))

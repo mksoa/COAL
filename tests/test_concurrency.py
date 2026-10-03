@@ -24,7 +24,7 @@ class T(unittest.TestCase):
         res = fan(16, lambda i: reserve_exact_attempt(ReservationRequest(ident(), SHA), net))
         c = Counter(r.outcome for r in res)
         self.assertEqual(c[O.CREATED], 1)
-        self.assertEqual(c[O.ALREADY_EXISTS], 15)
+        self.assertEqual(c[O.CONFLICT], 15)
         self.assertEqual(len(net.refs), 1)
 
     def test_different_identities_all_created(self):

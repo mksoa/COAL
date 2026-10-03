@@ -61,3 +61,11 @@ Até a conclusão dessas etapas, nenhum resultado deste repositório pode ser pr
 - `schemas/` — JSON Schemas (Draft 2020-12).
 - `receipts/` — organização futura dos recibos.
 - `.github/workflows/` — nenhum workflow instalado.
+
+## V0.3 source implementation (non-operational)
+
+The package provides a bounded custody core in `src/coal`, Draft 2020-12 schemas in `schemas/`, and deterministic tests in `tests/`. This extends the V0.1 documentary bootstrap without granting operational authority.
+
+Run offline tests with `PYTHONPATH=src:tests python -m unittest discover -s tests -v` after installing `.[dev]` for complete schema validation. CLI commands: `coal validate`, `coal inspect`, `coal simulate` (in-memory), and `coal readback` (GET only). See `docs/ARCHITECTURE.md`, `docs/THREAT_MODEL.md` and `docs/QUALIFICATION_STATUS.md`.
+
+Future candidate Git ref namespace: `refs/heads/coal/attempts/<digest>`. This does not make Git branches immutable or issuer-independent. No live POST, H0/M0, NEXT-001 effect or qualified W038 is included.

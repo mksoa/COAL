@@ -4,6 +4,7 @@
 |---|---|---|
 | Duplicate/racing creators | Single native create per request; ref uniqueness at the remote; concurrency tests on a synthetic remote | Real GitHub behavior not exercised |
 | Lost ACK / timeout | UNKNOWN + mandatory readback; request consumed | A match does not prove authorship |
+| HTTP 422 (ambiguous validation/collision) | CONFLICT; only later read-only reconciliation, no POST retry | Native 422 is not proof of exact reservation or ownership |
 | Stale 404 | No pre-check used as a guard | Absence is only at observation time |
 | Divergent body / SHA | CONFLICT / DIVERGENT | |
 | Receipt tampering | Digest over fields + body SHA | Receipts are not signed; no external anchor |

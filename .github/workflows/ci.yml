@@ -1,0 +1,44 @@
+name: ci
+# Validates source code only. A green run is NOT qualified external custody.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "schemas/**"
+      - "pyproject.toml"
+      - ".github/workflows/ci.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e ".[dev]"
+      - name: Structural validation
+        run: python -m coal.cli validate --schemas schemas
+      - name: Offline tests and schema validation
+        shell: bash
+        run: |
+          set -o pipefail
+          PYTHONPATH=src:tests python -m unittest discover -s tests -v 2>&1 | tee test-results.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: test-results.txt
+          if-no-files-found: ignore

@@ -65,9 +65,9 @@ def _interpret(resp: TransportResponse, ref: str, sha: str) -> Tuple[O, str]:
             return O.CREATED, "create_201_body_matches_request"
         return O.CONFLICT, "create_201_body_divergent"
     if s == 422:
-        if "already exists" in _message(resp.body):
-            return O.ALREADY_EXISTS, "422_reference_exists_ownership_not_established"
-        return O.REJECTED, "422_validation_failed"
+        # Native 422 is not a qualified proof of an existing exact reservation:
+        # other validation failures/rate limiting are possible. Never retry POST.
+        return O.CONFLICT, "http_422_read_only_reconciliation_required"
     if s == 409:
         return O.CONFLICT, "http_409"
     if s in (408, 429):

@@ -28,7 +28,7 @@ class T(unittest.TestCase):
         self.assertEqual(r.status, R.ABSENT_OBSERVED)
         m, url, hdr, body = h.calls[0]
         self.assertEqual(m, "GET")
-        self.assertEqual(url, "https://api.github.com/repos/owner/repo/git/ref/coal/attempts/" + ident().digest)
+        self.assertEqual(url, "https://api.github.com/repos/owner/repo/git/ref/heads/coal/attempts/" + ident().digest)
         self.assertIsNone(body)
         self.assertEqual(r.receipt.request_id, "RID1")
         self.assertNotIn("tok", json.dumps(r.receipt.to_dict()))
@@ -82,7 +82,7 @@ class T(unittest.TestCase):
         with redirect_stdout(buf):
             cli.main(["inspect", "--repository", "o/r", "--subject", "s", "--epoch", "e",
                       "--operation-id", "x", "--source-binding", "b"])
-        self.assertIn("refs/coal/attempts/", buf.getvalue())
+        self.assertIn("refs/heads/coal/attempts/", buf.getvalue())
 
     def test_cli_validate_schemas(self):
         buf = io.StringIO()
