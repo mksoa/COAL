@@ -73,7 +73,6 @@ for (const [label, overrides, expected] of [
   assert.doesNotMatch(result.stderr, /PRIVATE KEY|NO_PEM_CONTENT|LOCAL_FAKE|TOP_SECRET/);
 });
 
-
 // The key exists only in this isolated test process; no owner key or network is accessed.
 // Preloading a fixed fetch stub exercises actual S0 branches without an HTTP connection.
 import { generateKeyPairSync } from 'node:crypto';
