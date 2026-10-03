@@ -81,12 +81,14 @@ class TestOriginalOperationAdmission(unittest.TestCase):
         b=replace(p.binding, source_successor_sha256="1"*64)
         i=replace(p.identity,source_binding=b.digest)
         q=plan_carrier(i,b,p.coal_parent)
-        obs=NativeCarrierObservation(o.commit_sha,q.tree_sha,(q.coal_parent,),
+        next_carrier_sha="9"*40  # distinct immutable Git object for the new successor
+        obs=NativeCarrierObservation(next_carrier_sha,q.tree_sha,(q.coal_parent,),
                                      q.expected_tree_entries,q.content)
         second=port(q,obs,net)
         self.assertNotEqual(first.identity_digest,second.identity_digest)
+        self.assertNotEqual(first.carrier_sha,second.carrier_sha)
         self.assertEqual(first.admission_ref,second.admission_ref)
-        self.assertEqual(second.consume_once(i.digest,o.commit_sha).status,"UNKNOWN")
+        self.assertEqual(second.consume_once(i.digest,next_carrier_sha).status,"UNKNOWN")
         self.assertEqual(net.calls,["POST","GET","POST"])
         self.assertIsNone(second.readback_receipt)
 
