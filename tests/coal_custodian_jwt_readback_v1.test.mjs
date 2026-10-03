@@ -12,7 +12,6 @@ function fixture() {
     { id: 167609061, app_id: 5178248, account, repository_selection: 'selected', suspended_at: null },
   ];
 }
-
 test('exact positive is deliberately non-bearer and does not attest complete selected set', () => {
   const x = qualifyReadback(...fixture());
   assert.equal(x.installation_token_created, false);
