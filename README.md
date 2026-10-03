@@ -2,7 +2,7 @@
 
 **Classificação: CANDIDATE / PRE-H0 / NON-BEARER / NO OPERATIONAL AUTHORITY**
 
-Bootstrap V0.1 — exclusivamente documental e de definição de interfaces.
+Bootstrap V0.1 preservado; V0.3 contém implementação candidata e testes offline, sem autoridade operacional.
 
 ## Finalidade
 
@@ -30,13 +30,13 @@ Candidato **não qualificado**. A nova conta GitHub **não** foi qualificada com
 
 ## O que este repositório pode e não pode demonstrar
 
-**Pode demonstrar:** a estrutura pretendida dos registros (schemas), as propriedades desejadas (`CUSTODY_POLICY.md`) e a organização futura dos recibos.
+**Pode demonstrar:** a estrutura pretendida dos registros (schemas), propriedades desejadas (`CUSTODY_POLICY.md`) e comportamento do núcleo V0.3 sob testes offline e simulação.
 
 **Não pode demonstrar:** execução operacional, reserva real, CAS real, anti-rollback, independência administrativa, emissão de H0/M0, efeitos de NEXT-001 ou qualquer evidência do experimento histórico E17.
 
 Capacidade, autoridade e consequência observada são coisas distintas e permanecem separadas.
 
-## Interfaces futuras (apenas definidas, não implementadas)
+## Interfaces candidatas (implementadas em software, não ativadas operacionalmente)
 
 - `reserve_exact_attempt` — tenta criar, de forma condicional e de uso único, a reserva de uma tentativa exata. Distingue primeira criação, reserva preexistente, falha e resultado desconhecido. `UNKNOWN` nunca autoriza repetição.
 - `read_exact_attempt` — leitura **somente leitura** de uma tentativa exata, usada para reconciliar ACK desconhecido.
@@ -48,7 +48,7 @@ Contratos estruturais: `schemas/`.
 1. Revisão humana deste bootstrap.
 2. Decisão do proprietário sobre configuração administrativa do repositório (proteções, acessos, contas).
 3. Qualificação própria da independência administrativa do custodiante.
-4. Especificação e implementação da reserva condicional, com revisão independente.
+4. Qualificação da implementação de reserva condicional e de suas credenciais, com revisão independente.
 5. Qualificação própria de uma testemunha W038 independente.
 6. Evidência externa das propriedades alegadas, preservada separadamente.
 7. Decisão de integração tomada **dentro** da governança de `mshigueoka/GLOW`.
@@ -58,14 +58,8 @@ Até a conclusão dessas etapas, nenhum resultado deste repositório pode ser pr
 ## Conteúdo
 
 - `CUSTODY_POLICY.md` — propriedades desejadas e limitações.
-- `schemas/` — JSON Schemas (Draft 2020-12).
-- `receipts/` — previsto para uma etapa posterior; não há recibos operacionais implantados.
-- `.github/workflows/ci.yml` — validação somente leitura do código na `main`; nenhum workflow operacional de custódia instalado.
-
-## V0.3 source implementation (non-operational)
-
-The package provides a bounded custody core in `src/coal`, Draft 2020-12 schemas in `schemas/`, and deterministic tests in `tests/`. This extends the V0.1 documentary bootstrap without granting operational authority.
-
-Run offline tests with `PYTHONPATH=src:tests python -m unittest discover -s tests -v` after installing `.[dev]` for complete schema validation. CLI commands: `coal validate`, `coal inspect`, `coal simulate` (in-memory), and `coal readback` (GET only). See `docs/ARCHITECTURE.md`, `docs/THREAT_MODEL.md` and `docs/QUALIFICATION_STATUS.md`.
-
-Future candidate Git ref namespace: `refs/heads/coal/attempts/<digest>`. This does not make Git branches immutable or issuer-independent. No live POST, H0/M0, NEXT-001 effect or qualified W038 is included.
+- `src/coal/` — núcleo candidato, sem operação real ativada.
+- `schemas/` — quatro JSON Schemas (Draft 2020-12).
+- `tests/` — testes sintéticos e validação dos schemas.
+- `docs/` — arquitetura, ameaça, integração e qualificação.
+- `.github/workflows/ci.yml` — exclusivamente CI de código, sem efeito de custódia.
