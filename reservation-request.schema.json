@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "COAL reservation request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "identity",
+    "target_sha"
+  ],
+  "properties": {
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "subject",
+        "epoch",
+        "operation_id",
+        "source_binding"
+      ],
+      "properties": {
+        "repository": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "epoch": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "operation_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "source_binding": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      }
+    },
+    "target_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    }
+  }
+}
