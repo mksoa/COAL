@@ -1,6 +1,6 @@
 /** COAL App credentialless-by-default JWT GET verification candidate.
  * Source only; NOT a custody issuer, installation token, H0/M0, or NEXT-001 effect.
- * The --selftest path never accesses an environment secret or network.
+ * The offline unit tests never access an Environment secret or network.
  */
 import { sign } from 'node:crypto';
 import { resolve } from 'node:path';
@@ -10,6 +10,17 @@ const APP_ID = 5178248;
 const INSTALLATION_ID = 167609061;
 const OWNER_ID = 337364968;
 const APP_SLUG = 'coal-custodian-001';
+const FAILURE_STAGES = Object.freeze([
+  'HOSTED_CONTEXT_FAILED', 'KEY_UNAVAILABLE_OR_INVALID', 'JWT_SIGNING_FAILED',
+  'GET_APP_FAILED', 'GET_INSTALLATION_FAILED', 'GET_COAL_INSTALLATION_FAILED',
+  'READBACK_SHAPE_FAILED',
+]);
+
+/** Fixed label only: never serialize an exception or caller-supplied input. */
+export function boundedFailureCode(stage) {
+  const safe = FAILURE_STAGES.includes(stage) ? stage : 'UNCLASSIFIED';
+  return `COAL_CUSTODIAN_JWT_READBACK_S0_${safe}`;
+}
 
 function requireExact(test, code) {
   if (!test) throw new Error(code);
@@ -83,20 +94,32 @@ function checkFixedHostedContext() {
 }
 
 async function main() {
-  requireExact(process.argv.length === 3 && process.argv[2] === '--native-read', 'INVALID_MODE');
-  checkFixedHostedContext();
-  const jwt = jwtFromPrivateKey(process.env.COAL_CUSTODIAN_APP_PRIVATE_KEY);
-  // GET-only. No arbitrary endpoints or installation access token POST.
-  const app = await fixedGet('/app', jwt, 'APP');
-  const installation = await fixedGet(`/app/installations/${INSTALLATION_ID}`, jwt, 'INSTALLATION');
-  const repositoryInstallation = await fixedGet('/repos/mksoa/COAL/installation', jwt, 'COAL_INSTALLATION');
-  console.log(JSON.stringify(qualifyReadback(app, installation, repositoryInstallation)));
+  let stage = 'HOSTED_CONTEXT_FAILED';
+  try {
+    requireExact(process.argv.length === 3 && process.argv[2] === '--native-read', 'INVALID_MODE');
+    checkFixedHostedContext();
+    stage = 'KEY_UNAVAILABLE_OR_INVALID';
+    const privateKey = process.env.COAL_CUSTODIAN_APP_PRIVATE_KEY;
+    requireExact(typeof privateKey === 'string' && privateKey.includes('BEGIN') &&
+      privateKey.includes('PRIVATE KEY'), 'PRIVATE_KEY_UNAVAILABLE');
+    stage = 'JWT_SIGNING_FAILED';
+    const jwt = jwtFromPrivateKey(privateKey);
+    // GET-only. No arbitrary endpoints or installation access token POST.
+    stage = 'GET_APP_FAILED';
+    const app = await fixedGet('/app', jwt, 'APP');
+    stage = 'GET_INSTALLATION_FAILED';
+    const installation = await fixedGet(`/app/installations/${INSTALLATION_ID}`, jwt, 'INSTALLATION');
+    stage = 'GET_COAL_INSTALLATION_FAILED';
+    const repositoryInstallation = await fixedGet('/repos/mksoa/COAL/installation', jwt, 'COAL_INSTALLATION');
+    stage = 'READBACK_SHAPE_FAILED';
+    console.log(JSON.stringify(qualifyReadback(app, installation, repositoryInstallation)));
+  } catch {
+    // Never print exception/request body, JWT, PEM, token or secret-bearing response.
+    console.error(boundedFailureCode(stage));
+    process.exitCode = 1;
+  }
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  main().catch(() => {
-    // Never print exception/request body, JWT, PEM, token or secret-bearing response.
-    console.error('COAL_CUSTODIAN_JWT_READBACK_S0_FAIL_CLOSED');
-    process.exitCode = 1;
-  });
+  void main();
 }
