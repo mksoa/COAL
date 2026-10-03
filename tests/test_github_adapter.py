@@ -96,7 +96,7 @@ class T(unittest.TestCase):
         for bad in ("workflow_dispatch", "secrets.", "pull_request", "git push", "curl", "POST"):
             self.assertNotIn(bad, t)
         # Exact source inventory after the separately reviewed, GET-only custodian addition.
-        workflows = {item.name for item in (ROOT / ".github/workflows").glob("*.yml")}
+        workflows = {item.name for item in (ROOT / ".github/workflows").iterdir()}
         self.assertEqual(workflows, {"ci.yml", "coal-custodian-jwt-verify-v1.yml"})
         custodian = (ROOT / ".github/workflows/coal-custodian-jwt-verify-v1.yml").read_text()
         for required in (
