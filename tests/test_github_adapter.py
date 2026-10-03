@@ -95,4 +95,15 @@ class T(unittest.TestCase):
         self.assertIn("cancel-in-progress: true", t)
         for bad in ("workflow_dispatch", "secrets.", "pull_request", "git push", "curl", "POST"):
             self.assertNotIn(bad, t)
-        self.assertEqual(len(list((ROOT / ".github/workflows").glob("*"))), 1)
+        # Exact source inventory after the separately reviewed, GET-only custodian addition.
+        workflows = {item.name for item in (ROOT / ".github/workflows").iterdir()}
+        self.assertEqual(workflows, {"ci.yml", "coal-custodian-jwt-verify-v1.yml"})
+        custodian = (ROOT / ".github/workflows/coal-custodian-jwt-verify-v1.yml").read_text()
+        for required in (
+            "workflow_dispatch:", "contents: read", "environment: coal-custodian-verify",
+            "persist-credentials: false", "github.run_attempt == 1",
+            "github.ref_protected == true", "github.actor == 'mksoa'",
+        ):
+            self.assertIn(required, custodian)
+        for forbidden in ("pull_request:", "pull_request_target:", "push:"):
+            self.assertNotIn(forbidden, custodian)
