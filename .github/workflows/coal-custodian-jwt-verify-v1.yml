@@ -1,0 +1,33 @@
+# SOURCE INSTALLATION PROPOSAL ONLY; installing does not authorize dispatch.
+# The Environment must already exist and restrict deployment to protected main.
+name: COAL custodian JWT read-only verification V1
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: coal-custodian-jwt-readback-v1
+  cancel-in-progress: false
+jobs:
+  native-jwt-get:
+    if: ${{ github.repository == 'mksoa/COAL' && github.ref == 'refs/heads/main' && github.ref_protected == true && github.actor == 'mksoa' && github.run_attempt == 1 && github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    environment: coal-custodian-verify
+    steps:
+      - name: Checkout exact reviewed main without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Validate exact checkout and run GET-only app installation readback
+        shell: bash
+        env:
+          COAL_CUSTODIAN_APP_PRIVATE_KEY: ${{ secrets.COAL_CUSTODIAN_APP_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          node --version
+          node --test tests/coal_custodian_jwt_readback_v1.test.mjs
+          node tools/assurance/coal_custodian_jwt_readback_v1.mjs --native-read
+# No installation token POST, Git object/ref POST, Claim, Slot, W038, H0, M0 or NEXT-001 effect.
